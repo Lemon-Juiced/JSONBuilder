@@ -1,0 +1,12 @@
+type crafting_shaped
+0  
+1 tag minecraft:planks
+2  
+3  
+4 tag minecraft:planks
+5  
+6  
+7 item minecraft:stick
+8  
+result minecraft:wooden_sword
+count 1
