@@ -1,11 +1,10 @@
 ifeq ($(OS),Windows_NT)
-	EXE_EXTENSION := .exe
-	RM_COMMAND := del
+    EXE_EXTENSION := .exe
 else
-	EXE_EXTENSION :=
-	RM_COMMAND := rm
+    EXE_EXTENSION :=
 endif
 
-all:
-	dmd JSONRecipeBuilder.d -ofJSONRecipeBuilder$(EXE_EXTENSION)
-	$(RM_COMMAND) JSONRecipeBuilder.obj
+all: build 
+
+build:
+	dmd JSONBuilder.d ToolModelGenerator.d -ofJSONBuilder$(EXE_EXTENSION)
