@@ -1,10 +1,12 @@
 ifeq ($(OS),Windows_NT)
-    EXE_EXTENSION := .exe
+	EXE_EXTENSION := .exe
 else
-    EXE_EXTENSION :=
+	EXE_EXTENSION :=
 endif
 
-all: build 
+all: build
 
 build:
 	dmd JSONBuilder.d ToolModelGenerator.d -ofJSONBuilder$(EXE_EXTENSION)
+	rm -f *.o
+	rm -f *.obj
