@@ -1,102 +1,35 @@
 import std.file;
 import std.stdio;
 import std.string;
-import dev.lemonjuice.JSONBuilder.ToolModelGenerator;
 
 /** 
- * JSONBuilder in D
+ * JSONBuilder is an application that takes a command line argument containg a namespace and name of a resource.
+ * It then reads the reads the arguments and writes the data to several JSON files.
+ * These JSON files are for Minecraft models, for a set of tools and armor.
  *
- * This application takes user input and generates JSON files for Minecraft models and recipes.
- * It has a few presets that can be selected to generate several different kinds of JSON files for Minecraft models and recipes.
+ * The command line arguments are as follows:
+ * make
+ * ./JSONBuilder(.exe) <namespace> <resource_name>
  * 
  * Authors: LemonJuice
  */
-void main(){
-    // Get user input
-    write("Enter the namespace: ");
-    string namespace = strip(readln());
-    
-    write("Enter the resource type (name): ");
-    string resource = strip(readln());
-    
-    bool isItem;
-    while (true){
-        write("Is this an item or tag? (i/t): ");
-        string itemType = strip(readln());
-        if (itemType == "i"){
-            isItem = true;
-            break;
-        } else if (itemType == "t"){
-            isItem = false;
-            break;
+void main(string[] args) {
+    if (args.length != 3) { 
+        version(Windows) {
+            writeln("Usage: ./JSONBuilder.exe <namespace> <resource_name>");
         } else {
-            writeln("Invalid input. Please enter 'i' for item or 't' for tag.");
+            writeln("Usage: ./JSONBuilder <namespace> <resource_name>");
         }
+        return;
     }
 
-    bool generateTools;
-    while (true){
-        write("Generate tools? (y/n): ");
-        string generate = strip(readln());
-        if (generate == "y"){
-            generateTools = true;
-            break;
-        } else if (generate == "n"){
-            generateTools = false;
-            break;
-        } else {
-            writeln("Invalid input. Please enter 'y' for yes or 'n' for no.");
-        }
-    }
-
-    bool generateArmor;
-    while (true){
-        write("Generate armor? (y/n): ");
-        string generate = strip(readln());
-        if (generate == "y"){
-            generateArmor = true;
-            break;
-        } else if (generate == "n"){
-            generateArmor = false;
-            break;
-        } else {
-            writeln("Invalid input. Please enter 'y' for yes or 'n' for no.");
-        }
-    }
-
-    bool generateModels;
-    while (true){
-        write("Generate models? (y/n): ");
-        string generate = strip(readln());
-        if (generate == "y"){
-            generateModels = true;
-            break;
-        } else if (generate == "n"){
-            generateModels = false;
-            break;
-        } else {
-            writeln("Invalid input. Please enter 'y' for yes or 'n' for no.");
-        }
-    }
-
-    bool generateRecipes;
-    while (true){
-        write("Generate recipes? (y/n): ");
-        string generate = strip(readln());
-        if (generate == "y"){
-            generateRecipes = true;
-            break;
-        } else if (generate == "n"){
-            generateRecipes = false;
-            break;
-        } else {
-            writeln("Invalid input. Please enter 'y' for yes or 'n' for no.");
-        }
-    }
+    string namespace = args[1];
+    string resource = args[2];
 
     // Generate JSON files
-    if (generateTools) generateToolsJSON(namespace, resource, isItem, generateModels, generateRecipes);
-    //if (generateArmor) generateArmorJSON(namespace, resource, isItem, generateModels, generateRecipes);
+    generateToolsJSON(namespace, resource);
+
+    //if (generateArmor) generateArmorJSON(namespace, resource);
 }
 
 /** 
@@ -114,25 +47,39 @@ bool dirExists(string path) {
  * 
  * Params: namespace - the namespace
  *         resource - the resource type (name)
- *         isItem - whether the resource is an item or tag
- *         generateModels - whether to generate models
- *         generateRecipes - whether to generate recipes
  */
-void generateToolsJSON(string namespace, string resource, bool isItem, bool generateModels, bool generateRecipes){
-    // Create the tools directory in the models/item folder
-    string modelsToolsDir = "assets/" ~ namespace ~ "/models/item/tools";
+void generateToolsJSON(string namespace, string resource){
+    // Create an output directory: "models/item"
+    string modelsToolsDir = "models/item";
     if (!dirExists(modelsToolsDir)) {
-        mkdir(modelsToolsDir);
-        generateSwordModel(namespace, resource, isItem, modelsToolsDir);
-        generatePickaxeModel(namespace, resource, isItem, modelsToolsDir);
-        generateAxeModel(namespace, resource, isItem, modelsToolsDir);
-        generateShovelModel(namespace, resource, isItem, modelsToolsDir);
-        generateHoeModel(namespace, resource, isItem, modelsToolsDir);
+        mkdirRecurse(modelsToolsDir);
     }
 
-    // Create the tools directory in the recipes/tools folder
-    string recipesToolsDir = "assets/" ~ namespace ~ "/recipes/tools";
-    if (!dirExists(recipesToolsDir)) {
-        mkdir(recipesToolsDir);
-    }
+    // Generate JSON files for tools
+    generateToolModel(namespace, resource, "axe", modelsToolsDir);
+    generateToolModel(namespace, resource, "hoe", modelsToolsDir);
+    generateToolModel(namespace, resource, "pickaxe", modelsToolsDir);
+    generateToolModel(namespace, resource, "shovel", modelsToolsDir);
+    generateToolModel(namespace, resource, "sword", modelsToolsDir);
+
+    // Generate JSON files for armor
+}
+
+/**
+ * Generates a JSON model for a tool.
+ *
+ * Params: namespace - the namespace
+ *         resource - the resource type (name)
+ *         tool_type - the type of tool
+ *         modelsToolsDir - the directory to store the models and tools
+ */
+void generateToolModel(string namespace, string resource, string tool_type, string modelsToolsDir){
+    File swordModel = File(modelsToolsDir ~ "/" ~ resource ~ "_" ~ tool_type ~".json", "w");
+    swordModel.writeln("{");
+    swordModel.writeln("    \"parent\": \"item/handheld\",");
+    swordModel.writeln("    \"textures\": {");
+    swordModel.writeln("        \"layer0\": \"" ~ namespace ~ ":items/" ~ resource ~ "_" ~ tool_type ~"\"");
+    swordModel.writeln("    }");
+    swordModel.writeln("}");
+    swordModel.close();
 }

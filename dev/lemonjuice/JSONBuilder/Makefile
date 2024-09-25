@@ -7,6 +7,6 @@ endif
 all: build
 
 build:
-	dmd JSONBuilder.d ToolModelGenerator.d -ofJSONBuilder$(EXE_EXTENSION)
+	dmd JSONBuilder.d -ofJSONBuilder$(EXE_EXTENSION)
 	rm -f *.o
 	rm -f *.obj
