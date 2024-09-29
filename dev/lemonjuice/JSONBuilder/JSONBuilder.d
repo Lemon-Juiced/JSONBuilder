@@ -27,9 +27,7 @@ void main(string[] args) {
     string resource = args[2];
 
     // Generate JSON files
-    generateToolsJSON(namespace, resource);
-
-    //if (generateArmor) generateArmorJSON(namespace, resource);
+    generateAllJSON(namespace, resource);
 }
 
 /** 
@@ -43,12 +41,12 @@ bool dirExists(string path) {
 }
 
 /**
- * Generates JSON files for tools
+ * Generates JSON files for tools & armor
  * 
  * Params: namespace - the namespace
  *         resource - the resource type (name)
  */
-void generateToolsJSON(string namespace, string resource){
+void generateAllJSON(string namespace, string resource){
     // Create an output directory: "models/item"
     string modelsDir = "models/item";
     if (!dirExists(modelsDir)) {
